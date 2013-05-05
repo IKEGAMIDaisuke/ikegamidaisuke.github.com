@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div id="haskell-で計算機代数勉強会" class="slide section level1">
+<h1>Haskell で計算機代数勉強会 <!-- -*- markdown-command: "pandoc -f markdown -t slidy -s" -*- --></h1>
+<h2 id="初等幾何の定理の自動証明グレブナ基底を用いる方法">初等幾何の定理の自動証明—グレブナ基底を用いる方法</h2>
+<h2 id="ikegami__">@ikegami__</h2>
+<h2 id="日時-2013-05-04-1400---1450">日時 2013-05-04 14:00 - 14:50</h2>
+<h2 id="場所-川崎市中原市民館-第会議室">場所 川崎市中原市民館 第４会議室</h2>
+</div>
+<div id="発表の流れ" class="slide section level1">
+<h1>発表の流れ</h1>
+<ul>
+<li>書籍紹介</li>
+<li>アンケート結果</li>
+<li>全体をおおまかに</li>
+<li>初等幾何の話</li>
+<li>おまけ
+<ul>
+<li>おまけのおまけ</li>
+</ul></li>
+</ul>
+</div>
+<div id="書籍紹介" class="slide section level1">
+<h1>書籍紹介</h1>
+<p>“Ideals, Varieties, and Algorithms” David Cox, John Little, and Donal O’Shea</p>
+<p>原著 3rd ed. 2010. 200 ページ以上の書換え</p>
+<p>邦訳あり</p>
+<p>6 章の一部をこれから紹介します</p>
+</div>
+<div id="アンケートの結果" class="slide section level1">
+<h1>アンケートの結果</h1>
+<p>2013-05-04 深夜の時点 7 回答 :</p>
+<ul>
+<li>2 : D論と質問コーナー</li>
+<li>3 : 整数計画とGröbner基底</li>
+<li>4 : 初等幾何の自動証明</li>
+<li>1 : Gröbner bases in type theory, T. Coquand and H. Persson, 1999.</li>
+<li>2 : Computational Oriented Matroids: Equivalence Classes of Matrices within a Natural Framework, J. G. Bokowski, 2006.</li>
+<li>2 : … DoCon のアレ</li>
+<li>3 : 書換え系から見た Gröbner 基底</li>
+<li>2 : Knuth-Bendix との関連性</li>
+<li>2 : その他</li>
+</ul>
+</div>
+<div id="数式処理とは" class="slide section level1">
+<h1>数式処理とは？</h1>
+<p>J. symbolic computation</p>
+<ul>
+<li>computational algebra</li>
+<li>computational geometry (non-linear)</li>
+<li>automated theorem proving</li>
+<li>automatic programming</li>
+<li>symbolic computation languages</li>
+<li>its applications</li>
+</ul>
+</div>
+<div id="数式処理の対象とは" class="slide section level1">
+<h1>数式処理の対象とは？</h1>
+<ul>
+<li>symbolic objects
+<ul>
+<li>terms</li>
+<li>formulas</li>
+</ul></li>
+<li>algebraic objects
+<ul>
+<li>polynomials
+<ul>
+<li>Gröbner bases</li>
+</ul></li>
+</ul></li>
+<li>geometrical objects
+<ul>
+<li>???</li>
+</ul></li>
+</ul>
+<p>Gröbner bases</p>
+</div>
+<div id="最近見つけた話題" class="slide section level1">
+<h1>最近見つけた話題</h1>
+<ul>
+<li><a href="http://www.math.jst.go.jp/ja/scientists/teamhibi/">日比チーム CREST</a></li>
+<li><a href="http://www.iip.ist.i.kyoto-u.ac.jp/research.html#7">山本章博研究室</a></li>
+</ul>
+</div>
+<div id="初等幾何の自動証明とグレブナ基底" class="slide section level1">
+<h1>初等幾何の自動証明とグレブナ基底</h1>
+<p>「自動」のどこに期待するのか？</p>
+<p>カメラから読み取った図入りの問題から、 問題を理解し、証明し、出力できるのか？</p>
+<p>補助線を引くことができるのか？</p>
+</div>
+<div id="扉前" class="slide section level1">
+<h1>扉前</h1>
+<pre><code>図形を見るのは右半球の働き、論証は左半球の働きであるから、
+平面幾何は左右の両半球を互に関連させて同時に訓練すること
+になる。殊に証明のための補助線を引くには図形全体のパター
+ンを眺めて総合的に判断することが必要である。</code></pre>
+<p>— 初出 1979 数学セミナー 3 月号発見の真理と平面幾何 『怠け数学者の記』 小平邦彦, 岩波文庫</p>
+<p>前提が導出できるかアヤシイ事柄から、正しそうな命題を行う</p>
+<p>詭弁の一例</p>
+</div>
+<div id="扉" class="slide section level1">
+<h1>扉</h1>
+<pre><code>The purpose of computing is insight, not numbers.</code></pre>
+<p>—Richard Hamming, “Numerical methods for scientists and engineers”, Richar W. Hamming, 1962.</p>
+</div>
+<div id="初等幾何とは" class="slide section level1">
+<h1>初等幾何とは</h1>
+<p>三角形とか丸とかが書いてあって、補助線をひいたりして出題者を満足させるゲーム</p>
+</div>
+<div id="例題" class="slide section level1">
+<h1>例題</h1>
+<p>Cox, Little, O’Shea p.37 邦訳 Example 1.</p>
+<p>平行四辺形 ABCD の対角線の交点は両対角線を二分する</p>
+</div>
+<div id="初等幾何における証明とは何か" class="slide section level1">
+<h1>初等幾何における証明とは何か</h1>
+<p>結論が前提から飛躍なく導かれること</p>
+</div>
+<div id="俯瞰図" class="slide section level1">
+<h1>俯瞰図</h1>
+<p>ユークリッドの公準・公理</p>
+<ul>
+<li>任意の点から他の一点に対して直線を引くこと</li>
+<li>略</li>
+</ul>
+<p>ユークリッド座標に翻訳する</p>
+<ul>
+<li>「2 点の座標を決める」</li>
+<li>「2 点を通る直線の方程式を決める」</li>
+</ul>
+<p>–&gt; 前提、結論が複数の方程式になる</p>
+<p>前提が「消える」ならば結論は「消える」</p>
+</div>
+<div id="実数上のユークリッド空間に埋め込む" class="slide section level1">
+<h1>実数上のユークリッド空間に埋め込む</h1>
+<p>Cox らの記法</p>
+<p>独立にあたえる文字として u, v をつかう</p>
+<p>制約から決まる文字として x, y をつかう</p>
+<p>平行四辺形 ABCD</p>
+<pre><code>A (0 ,  0)
+B (u1,  0)
+C (u2, u3)
+D (x1, x2)</code></pre>
+<p>線分 AB と CD が平行</p>
+<pre><code>x2 - u3
+------- = 0
+x1 - u2</code></pre>
+</div>
+<div id="グレブナ基底を用いる発表における前提" class="slide section level1">
+<h1>グレブナ基底を用いる発表における前提</h1>
+<p>グレブナ基底とは？</p>
+<ul>
+<li>一般人は 15 分でぎりぎり</li>
+<li>一松先生の単行本で 4 ページ 1995</li>
+<li>日比先生のスライドで 1 枚 2011</li>
+</ul>
+<p>丸山先生の市民講演会 1998</p>
+<pre><code>魔術</code></pre>
+</div>
+<div id="グレブナ基底を使う" class="slide section level1">
+<h1>グレブナ基底を使う</h1>
+<ol style="list-style-type: decimal">
+<li>前提から制約を導出し、多項式に変換 h1, h2, …, hn</li>
+<li>結論を多項式に変換 g</li>
+<li>＜h1, h2, …, hn, 1 - y g＞ の Gröbner bases を計算</li>
+</ol>
+<p>計算結果が {1} ならば OK.</p>
+</div>
+<div id="困難" class="slide section level1">
+<h1>困難</h1>
+<p>問題の翻訳は一意的でない</p>
+<ul>
+<li>変数が多くなると死（メモリと計算量の両方）</li>
+<li>複素数上に解があり、実数上に解が無い</li>
+<li>退化</li>
+</ul>
+<p>複素数体 v.s. 実数体</p>
+<p>代数的閉体!</p>
+<p>虚根!!</p>
+<p>Wu の方法</p>
+<ul>
+<li>擬除算</li>
+<li>擬剰余</li>
+</ul>
+</div>
+<div id="おまけコンピュータの成長" class="slide section level1">
+<h1>おまけ：コンピュータの成長</h1>
+<p>数式をコンピュータが理解する</p>
+<p>??? QuickCheck</p>
+<pre><code>{-# LANGUAGE ScopedTypeVariables #-}
+quickCheckWith (stdArgs {maxSuccess=12345})
+  \(x :: Int) y z -&gt; x /= 0 &amp;&amp; y /= 0 &amp;&amp; z /= 0 ==&gt;
+  x^2 + y^2 /= z^2
+--&gt;
+*** Failed! Falsifiable (after 808 tests and 1 shrink):
+3
+4
+5</code></pre>
+<p>??? Z3 high-performance theorem prover</p>
+<pre><code>x, y, z = Ints(&#39;x y z&#39;)
+solve(x**2 + y**2 == z**2, show=True)
+solve(x**2 + y**2 != z**2, show=True)
+--&gt; (2013-04-26 z3py)
+failed to solve
+
+x, y = Reals(&#39;x y&#39;)
+solve(x**2 + y**2 &gt; 3, x**3 + y &lt; 5, show=True)
+--&gt;
+[x=1/8, y=2]</code></pre>
+<p>初等幾何の問題をコンピュータが理解する</p>
+<p>????</p>
+<p>東大入試の二次試験をコンピュータが理解する</p>
+<p>????? 「東ロボ」プロジェクト 2021 年達成予定</p>
+<p>初等幾何の問題 ⊂ 東大入試</p>
+</div>
+<div id="おまけの参考文献" class="slide section level1">
+<h1>おまけの参考文献</h1>
+<ul>
+<li>21robot.org</li>
+<li>QuickCheck</li>
+<li>Z3py</li>
+</ul>
+</div>
+<div id="おまけのおまけ幾何の証明における誤り" class="slide section level1">
+<h1>おまけのおまけ？幾何の証明における誤り</h1>
+<p>幾何の証明における誤り</p>
+<ol style="list-style-type: decimal">
+<li>明白な誤り</li>
+<li>前提が誤り</li>
+<li>前提も適用も正しいが、有限回の適用で証明できない</li>
+</ol>
+<p>人間にとって、適用があやまりであることは明白に見抜ける？</p>
+<p>命題の記述が可算無限になる体系は存在することに注意 “Languages with expressions of infinite length”, C. R. Karp, 1964.</p>
+<ol style="list-style-type: decimal">
+<li>直角は鈍角である。</li>
+<li>3 + 5 == 12 ならば、3 + 5 は偶数である。</li>
+<li><p>「三角形の内角の和は 2 直角である。」を、平行線の公理抜きで証明</p>
+<p>Я. С. Дубнов : ヤ・ドゥブノフ, 1955 『幾何の証明における誤り』 安香満恵, 矢島敬二, 松野武 訳 数学新書, 東京図書, 1961</p></li>
+</ol>
+</div>
+<div id="おまけのおまけの参考文献" class="slide section level1">
+<h1>おまけのおまけの参考文献</h1>
+<ul>
+<li>International Conference of Automated Deduction</li>
+<li><p>J. Automated Reasoning</p></li>
+<li>「計算機が定理を証明する」, 西村敏男, 数学セミナー, 4 月号, 1963.</li>
+<li>「機械による数学の証明のプログラム　—推理解析学の現状 —」, 赤 摂也, 数学, 12(2), ????.</li>
+<li>“Toward mechanical mathematics”, H. Wang, IBM Journal, 1960</li>
+<li>“Realization of a geometry theorem proving machine”, H. Gelernter, ????</li>
+<li><p>「証明のプログラミング」, 島内 剛一, 数学, 15(1), ????</p></li>
+</ul>
+</div>
+<div id="おまけのおまけのおまけ-赤-摂也の論文の紹介" class="slide section level1">
+<h1>おまけのおまけのおまけ 赤 摂也の論文の紹介</h1>
+<p>Inferential Analysis by H. Wang ==&gt; 推理解析学(訳語 by ????)</p>
+<ul>
+<li>Genzen’s sequent calculus –&gt; modified by P. C. Gilmore / by H. Wang / by 赤(Seki) et al.</li>
+<li>Gelernter’s “problem-solving graph rewriting algorithm”</li>
+</ul>
+<p>Gelernter のアイデア：</p>
+<pre><code>証明すべきゴールから逆向き推論を行い、不備を含む証明を頂点
+とする有向グラフを膨らます。枝狩りに、Gelernter&#39;s distance
+を導入する。この距離の定義は、初等幾何学から派生する概念を
+用いる。</code></pre>
+<p>Gelernter のアルゴリズムが証明した事例：</p>
+<ul>
+<li>角の中線上の点は、角の辺から等距離にある。</li>
+<li>一対の対辺が平行で、かつ長さが等しいような四辺形の他の一対の対辺の長さは、やはり等しい。</li>
+<li>平行四辺形???</li>
+</ul>
+<p>推理！</p>
+</div>
+</body>
+</html>
